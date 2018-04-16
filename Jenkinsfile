@@ -15,6 +15,7 @@ pipeline {
           def dateFormat = new SimpleDateFormat("yy.MM.dd")
           currentBuild.displayName = dateFormat.format(new Date()) + "-" + env.BUILD_NUMBER
         }
+        sh "mvn clean install"
         sh "docker image build -t seon/order-tiger-demo ."
       }
     }
