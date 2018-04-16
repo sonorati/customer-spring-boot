@@ -25,9 +25,9 @@ pipeline {
       }
       steps {
         withDockerRegistry([ credentialsId: "docker-hub", url: "" ]) {
-          sh "docker tag seon/order-tiger-demo seon/order-tiger-demo:0.0.2"
-                  sh "docker image push seon/order-tiger-demo:latest"
-                  sh "docker image push seon/order-tiger-demo:0.0.2"
+          sh "docker tag seon/order-tiger-demo seon/order-tiger-demo:${currentBuild.displayName}"
+          sh "docker image push seon/order-tiger-demo:latest"
+          sh "docker image push seon/order-tiger-demo:${currentBuild.displayName}"
         }
       }
     }
