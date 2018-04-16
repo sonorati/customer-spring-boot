@@ -125,6 +125,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>ordertiger-demo</finalName>
 	</build>
 
 
