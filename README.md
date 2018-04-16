@@ -1,4 +1,4 @@
-## Sprng boot docker swarm smaple
+## Spring boot docker swarm smaple
 
 ### Override internal property
 
