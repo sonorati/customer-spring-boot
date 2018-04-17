@@ -21,7 +21,9 @@ pipeline {
     }
     stage("publish") {
       when {
-        branch "master"
+        expression {
+          return env.BRANCH_NAME == 'master';
+        }
       }
       steps {
         withDockerRegistry([ credentialsId: "docker-hub", url: "" ]) {
