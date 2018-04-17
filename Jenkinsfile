@@ -35,14 +35,14 @@ pipeline {
   post {
     success {
       slackSend(
-        baseUrl: "https://hooks.slack.com/services/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"
+        baseUrl: "https://hooks.slack.com/services/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",
         color: "good",
         message: "seon/order-tiger-demo:${currentBuild.displayName} was deployed to the cluster. Verify that it works correctly!"
       )
     }
     failure {
       slackSend(
-        baseUrl: "https://hooks.slack.com/services/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"
+        baseUrl: "https://hooks.slack.com/services/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",
         color: "danger",
         message: "${env.JOB_NAME} failed: ${env.RUN_DISPLAY_URL}"
       )
