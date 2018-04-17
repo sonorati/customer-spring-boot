@@ -15,8 +15,7 @@ pipeline {
           def dateFormat = new SimpleDateFormat("yy.MM.dd")
           currentBuild.displayName = dateFormat.format(new Date()) + "-" + env.BUILD_NUMBER
         }
-        sh "mvn clean install"
-        sh "docker image build -t seon/order-tiger-demo ."
+        sh "mvn --version"
       }
     }
     stage("publish") {
@@ -26,11 +25,7 @@ pipeline {
         }
       }
       steps {
-        withDockerRegistry([ credentialsId: "docker-hub", url: "" ]) {
-          sh "docker tag seon/order-tiger-demo seon/order-tiger-demo:${currentBuild.displayName}"
-          sh "docker image push seon/order-tiger-demo:latest"
-          sh "docker image push seon/order-tiger-demo:${currentBuild.displayName}"
-        }
+        echo env.BRANCH_NAME
       }
     }
   }
