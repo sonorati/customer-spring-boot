@@ -20,9 +20,6 @@ pipeline {
       }
     }
     stage("publish") {
-      when {
-        branch "master"
-      }
       steps {
         withDockerRegistry([ credentialsId: "docker-hub", url: "" ]) {
           sh "docker tag seon/order-tiger-demo seon/order-tiger-demo:${currentBuild.displayName}"
