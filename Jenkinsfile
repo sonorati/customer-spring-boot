@@ -28,7 +28,7 @@ pipeline {
     success {
       slackSend(
         color: "good",
-        message: "seon/order-tiger-demo:${env.BUILD_NUMBER} was deployed to the cluster. Verify that it works correctly!"
+        message: "seon/order-tiger-demo:1.${env.BUILD_NUMBER} was deployed to the cluster. Verify that it works correctly!"
       )
     }
     failure {
