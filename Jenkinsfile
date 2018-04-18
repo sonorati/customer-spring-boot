@@ -1,4 +1,3 @@
-import java.text.SimpleDateFormat
 
 pipeline {
   agent {
@@ -10,11 +9,7 @@ pipeline {
   }
   stages {
     stage("build") {
-      steps {
-        script {
-          def dateFormat = new SimpleDateFormat("yy.MM.dd")
-          currentBuild.displayName = dateFormat.format(new Date()) + "-" + env.BUILD_NUMBER
-        }
+      steps {   
         sh "mvn clean install"
         sh "docker image build -t seon/order-tiger-demo ."
       }
@@ -22,9 +17,9 @@ pipeline {
     stage("publish") {
       steps {
         withDockerRegistry([ credentialsId: "docker-hub", url: "" ]) {
-          sh "docker tag seon/order-tiger-demo seon/order-tiger-demo:${currentBuild.displayName}"
+          sh "docker tag seon/order-tiger-demo seon/order-tiger-demo:1.${env.BUILD_NUMBER}"
           sh "docker image push seon/order-tiger-demo:latest"
-          sh "docker image push seon/order-tiger-demo:${currentBuild.displayName}"
+          sh "docker image push seon/order-tiger-demo:1.${env.BUILD_NUMBER}"
         }
       }
     }
@@ -33,7 +28,7 @@ pipeline {
     success {
       slackSend(
         color: "good",
-        message: "seon/order-tiger-demo:${currentBuild.displayName} was deployed to the cluster. Verify that it works correctly!"
+        message: "seon/order-tiger-demo:${env.BUILD_NUMBER} was deployed to the cluster. Verify that it works correctly!"
       )
     }
     failure {
