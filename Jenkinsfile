@@ -23,17 +23,17 @@ pipeline {
         }
       }
     }
+
     stage("deploy") {
-      steps {
-        withEnv([
-              "DOCKER_TLS_VERIFY=1",
-              "DOCKER_HOST=tcp://${env.CLUSTER_IP}:2376",
-              "DOCKER_CERT_PATH=/machines/${env.CLUSTER_NAME}"
+      withEnv([
+          "DOCKER_TLS_VERIFY=1",
+          "DOCKER_HOST=tcp://${env.CLUSTER_IP}:2376",
+          "DOCKER_CERT_PATH=/machines/${env.CLUSTER_NAME}"
       ]) {
         sh "docker service update --image seon/order-tiger-demo:1.${env.BUILD_NUMBER} customer"
-
       }
     }
+
   }
   post {
     success {
