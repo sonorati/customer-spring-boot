@@ -16,7 +16,7 @@ pipeline {
     }
     stage("publish") {
       steps {
-        withDockerRegistry([ credentialsId: "docker-hub", url: "" ]) {
+        withDockerRegistry([ credentialsId: "seon", url: "" ]) {
           sh "docker tag seon/order-tiger-demo seon/order-tiger-demo:1.${env.BUILD_NUMBER}"
           sh "docker image push seon/order-tiger-demo:latest"
           sh "docker image push seon/order-tiger-demo:1.${env.BUILD_NUMBER}"
