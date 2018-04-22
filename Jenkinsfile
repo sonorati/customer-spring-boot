@@ -8,46 +8,17 @@ pipeline {
     disableConcurrentBuilds()
   }
   stages {
-    stage("build") {
-      steps {   
-        sh "mvn clean install"
-        sh "docker image build -t seon/order-tiger-demo ."
-      }
-    }
-    stage("publish") {
-      steps {
-        withDockerRegistry([ credentialsId: "dockerhub", url: "" ]) {
-          sh "docker tag seon/order-tiger-demo seon/order-tiger-demo:1.${env.BUILD_NUMBER}"
-          sh "docker image push seon/order-tiger-demo:latest"
-          sh "docker image push seon/order-tiger-demo:1.${env.BUILD_NUMBER}"
-        }
-      }
-    }
-
     stage("deploy") {
       steps {
-        withEnv([
+        withDockerRegistry([ credentialsId: "dockerhub", url: "" ]) {
+            withEnv([
                   "DOCKER_TLS_VERIFY=1",
                   "DOCKER_HOST=tcp://${env.PROD_IP}:2376",
                   "DOCKER_CERT_PATH=/machines/${env.CLUSTER_NAME}"
-              ])
-        sh "docker service update --image seon/order-tiger-demo:1.${env.BUILD_NUMBER} customer"
+                      ])
+                sh "docker service update --image seon/order-tiger-api:0.15 order"
+        }
       }
-    }
-
-  }
-  post {
-    success {
-      slackSend(
-        color: "good",
-        message: "seon/order-tiger-demo:1.${env.BUILD_NUMBER} was deployed to the cluster. Verify that it works correctly!"
-      )
-    }
-    failure {
-      slackSend(
-        color: "danger",
-        message: "${env.JOB_NAME} failed: ${env.RUN_DISPLAY_URL}"
-      )
     }
   }
 }
