@@ -1,0 +1,64 @@
+import java.text.SimpleDateFormat
+
+pipeline {
+  agent {
+    label "prod"
+  }
+  options {
+    buildDiscarder(logRotator(numToKeepStr: '2'))
+    disableConcurrentBuilds()
+  }
+  stages {
+    stage('checkout') { // for display purposes
+      steps {
+        script {
+          git 'https://github.com/sonorati/customer-spring-boot.git'
+        }
+      }
+    }
+    stage("build") {
+      steps {
+        script {
+          def dateFormat = new SimpleDateFormat("yy.MM.dd")
+          currentBuild.displayName = dateFormat.format(new Date()) + "-" + env.BUILD_NUMBER
+        }
+
+        sh "mvn -Dmaven.test.failure.ignore clean package"
+        sh "docker image build -t seon/customer ."
+      }
+    }
+    stage("release") {
+      when {
+        branch "master"
+      }
+      steps {
+        dockerLogin()
+        sh "docker tag seon/customer seon/customer:${currentBuild.displayName}"
+        sh "docker image push seon/customer:latest"
+        sh "docker image push seon/customer:${currentBuild.displayName}"
+      }
+    }
+    stage("deploy") {
+          steps {
+            sshagent (credentials: ['quality-cluster']) {
+              sh 'ssh -o StrictHostKeyChecking=no -l docker 34.244.104.34 uname -a'
+              sh "docker service ls"
+            }
+          }
+    }
+  }
+  post {
+    success {
+      slackSend(
+        color: "good",
+        message: "seon/customer:${currentBuild.displayName} was deployed to the cluster. Verify that it works correctly!"
+      )
+    }
+    failure {
+      slackSend(
+        color: "danger",
+        message: "${env.JOB_NAME} failed: ${env.RUN_DISPLAY_URL}"
+      )
+    }
+  }
+}

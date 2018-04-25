@@ -9,3 +9,4 @@ ADD target/ordertiger-demo.jar ordertiger-demo.jar
 
 
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/ordertiger-demo.jar"]
+HEALTHCHECK --interval=10s CMD wget -qO- localhost:8080/demo/hello
