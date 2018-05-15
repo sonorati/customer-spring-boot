@@ -1,8 +1,5 @@
 
 pipeline {
-  agent {
-    label "prod"
-  }
   options {
     buildDiscarder(logRotator(numToKeepStr: '3'))
     disableConcurrentBuilds()
